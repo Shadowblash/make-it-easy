@@ -1,7 +1,10 @@
 import * as SecureStore from 'expo-secure-store';
-import type { SeedMeal, Meal, MealIngredient } from '../types';
+import { supabase } from './supabase';
+import { normalize } from '../utils/normalize';
+import type { SeedMeal } from '../types';
 
 const ONBOARDING_KEY = 'onboarding_complete';
+const SEED_SYNCED_KEY = 'seed_history_synced';
 
 export async function hasCompletedOnboarding(): Promise<boolean> {
   try {
@@ -17,35 +20,55 @@ export async function completeOnboarding(): Promise<void> {
 }
 
 /**
- * Save seed meal selections as initial history.
- * Each selected seed meal is inserted into the local meals table with:
- * - source: 'seed'
- * - cooked_at: 6 months ago (so they don't appear as "recently cooked")
+ * Insert selected seed meals into Supabase as meal history.
+ * cooked_at = 6 months ago → eligible for suggestions, not "recently cooked".
+ * source = 'seed' → frequency_bonus × 0.5 (yields to real user meals quickly).
  */
 export async function saveSeedSelections(meals: SeedMeal[]): Promise<void> {
-  // TODO: wire to InventoryService / SupabaseService once DB is set up
-  // For now, store in SecureStore as JSON (bootstrapped, small data)
+  const { data: userData } = await supabase.auth.getUser();
+  const userId = userData.user?.id;
+  if (!userId) throw new Error('Not authenticated');
+
   const sixMonthsAgo = new Date();
   sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+  const cookedAt = sixMonthsAgo.toISOString();
 
-  const seedHistory: Meal[] = meals.map((m) => ({
-    id: m.id,
-    user_id: 'local',
-    name: m.name,
-    cooked_at: sixMonthsAgo.toISOString(),
-    source: 'seed' as const,
-    notes: null,
-    updated_at: new Date().toISOString(),
-  }));
+  for (const seedMeal of meals) {
+    // Insert meal
+    const { data: mealRow, error: mealErr } = await supabase
+      .from('meals')
+      .insert({
+        user_id: userId,
+        name: seedMeal.name,
+        cooked_at: cookedAt,
+        source: 'seed',
+        notes: null,
+      })
+      .select('id')
+      .single();
 
-  await SecureStore.setItemAsync('seed_history', JSON.stringify(seedHistory));
+    if (mealErr || !mealRow) continue;
+
+    // Insert meal_ingredients
+    const ingredients = seedMeal.ingredients.map((raw) => ({
+      meal_id: mealRow.id,
+      ingredient_name: raw,
+      ingredient_name_normalized: normalize(raw),
+      qty: null,
+      qty_unit: null,
+    }));
+
+    await supabase.from('meal_ingredients').insert(ingredients);
+  }
+
+  await SecureStore.setItemAsync(SEED_SYNCED_KEY, 'true');
 }
 
-export async function getSeedHistory(): Promise<Meal[]> {
+export async function isSeedSynced(): Promise<boolean> {
   try {
-    const raw = await SecureStore.getItemAsync('seed_history');
-    return raw ? JSON.parse(raw) : [];
+    const v = await SecureStore.getItemAsync(SEED_SYNCED_KEY);
+    return v === 'true';
   } catch {
-    return [];
+    return false;
   }
 }
