@@ -85,7 +85,7 @@ export default function StatsScreen() {
 
 function StatCard({ value, label, color }: { value: string; label: string; color: string }) {
   return (
-    <View style={[styles.statCard, { borderTopColor: color }]}>
+    <View style={styles.statCard}>
       <Text style={[styles.statValue, { color }]}>{value}</Text>
       <Text style={styles.statLabel}>{label}</Text>
     </View>
@@ -103,11 +103,10 @@ const styles = StyleSheet.create({
   statGrid: { flexDirection: 'row', gap: 12, marginBottom: 24 },
   statCard: {
     flex: 1, backgroundColor: '#FAFAF7', borderRadius: 12, padding: 16,
-    borderTopWidth: 3,
     shadowColor: 'rgba(61,43,31,0.06)', shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 1, shadowRadius: 4, elevation: 1,
   },
-  statValue: { fontSize: 28, fontWeight: '700', marginBottom: 4 },
+  statValue: { fontSize: 32, fontWeight: '700', marginBottom: 4 },
   statLabel: { fontSize: 13, color: '#6B5E57', fontWeight: '500' },
   section: { marginBottom: 24 },
   sectionTitle: { fontSize: 17, fontWeight: '700', color: '#3D2B1F', marginBottom: 12 },
