@@ -75,6 +75,15 @@ export async function getExpiringItems(withinDays = 2): Promise<InventoryItem[]>
   return data ?? [];
 }
 
+export async function getItemByNormalizedName(normalizedName: string): Promise<InventoryItem | null> {
+  const { data } = await supabase
+    .from('inventory_items')
+    .select('*')
+    .eq('ingredient_name_normalized', normalizedName)
+    .limit(1);
+  return data?.[0] ?? null;
+}
+
 // ─── CREATE ───────────────────────────────────────────────────────────────────
 
 export async function addItem(input: CreateItemInput): Promise<InventoryItem> {

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Text } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 
 import InventoryScreen from '../screens/InventoryScreen';
@@ -16,6 +17,7 @@ const TAB_BAR_HEIGHT = 56;
 
 export default function MainTabs() {
   const { t } = useTranslation();
+  const insets = useSafeAreaInsets();
 
   return (
     <Tab.Navigator
@@ -24,8 +26,8 @@ export default function MainTabs() {
         tabBarStyle: {
           backgroundColor: '#F5F0E8',
           borderTopColor: 'rgba(61,43,31,0.1)',
-          height: TAB_BAR_HEIGHT,
-          paddingBottom: 6,
+          height: TAB_BAR_HEIGHT + insets.bottom,
+          paddingBottom: insets.bottom + 6,
           paddingTop: 6,
         },
         tabBarActiveTintColor: '#4CAF73',
