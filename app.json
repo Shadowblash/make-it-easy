@@ -17,7 +17,9 @@
       "bundleIdentifier": "com.makiteasy.app",
       "infoPlist": {
         "NSCameraUsageDescription": "Used to scan barcodes of food products",
-        "NSMicrophoneUsageDescription": "Used for voice input to add inventory items"
+        "NSMicrophoneUsageDescription": "Used for voice input to add inventory items",
+        "NSSpeechRecognitionUsageDescription": "Used for voice input to add inventory items",
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {
@@ -64,6 +66,11 @@
           "speechRecognitionPermission": "Used for voice input to add inventory items"
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "73969ac7-80ce-4868-8807-15bcb1f6bb31"
+      }
+    }
   }
 }
