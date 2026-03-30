@@ -4,22 +4,37 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import type { SuggestionResult } from '../types';
-import { addItem } from '../services/InventoryService';
 import { supabase } from '../services/supabase';
 import { decrementItem } from '../services/InventoryService';
+import { addToShoppingList } from '../services/ShoppingService';
 
 interface Props {
   result: SuggestionResult;
   onCookTonight: () => void;
+  onShoppingAdded?: () => void;
 }
 
-export default function MealCard({ result, onCookTonight }: Props) {
+export default function MealCard({ result, onCookTonight, onShoppingAdded }: Props) {
   const { t } = useTranslation();
-  const { meal, coverage, missingIngredients, score } = result;
+  const { meal, coverage, missingIngredients } = result;
   const [cooking, setCooking] = useState(false);
+  const [addingToShopping, setAddingToShopping] = useState(false);
+  const [shoppingAdded, setShoppingAdded] = useState(false);
 
   const haveCount = meal.ingredients.length - missingIngredients.length;
   const totalCount = meal.ingredients.length;
+
+  async function handleAddToShopping() {
+    setAddingToShopping(true);
+    try {
+      for (const name of missingIngredients) {
+        await addToShoppingList(name, null, null, meal.id);
+      }
+      setShoppingAdded(true);
+      onShoppingAdded?.();
+    } catch { /* offline */ }
+    finally { setAddingToShopping(false); }
+  }
 
   async function handleCookTonight() {
     setCooking(true);
@@ -72,12 +87,29 @@ export default function MealCard({ result, onCookTonight }: Props) {
 
         {/* Missing ingredients */}
         {missingIngredients.length > 0 && (
-          <Text style={styles.missingText} numberOfLines={2}>
-            {t('suggestions.missing', { items: missingIngredients.slice(0, 3).join(', ') })}
-          </Text>
+          <View style={styles.missingRow}>
+            <Text style={styles.missingText} numberOfLines={2}>
+              {t('suggestions.missing', { items: missingIngredients.slice(0, 3).join(', ') })}
+            </Text>
+            <TouchableOpacity
+              style={[styles.shopBtn, shoppingAdded && styles.shopBtnDone]}
+              onPress={handleAddToShopping}
+              disabled={addingToShopping || shoppingAdded}
+              accessibilityRole="button"
+              accessibilityLabel={t('suggestions.addToShopping')}
+            >
+              {addingToShopping ? (
+                <ActivityIndicator color="#4CAF73" size="small" />
+              ) : (
+                <Text style={[styles.shopBtnText, shoppingAdded && styles.shopBtnTextDone]}>
+                  {shoppingAdded ? '✓' : t('suggestions.addToShopping')}
+                </Text>
+              )}
+            </TouchableOpacity>
+          </View>
         )}
 
-        {/* Footer: prep time + CTA */}
+        {/* Footer: cook CTA */}
         <View style={styles.footer}>
           <TouchableOpacity
             style={styles.cookBtn}
@@ -145,7 +177,15 @@ const styles = StyleSheet.create({
   },
   coverageBarFill: { height: '100%', backgroundColor: '#4CAF73', borderRadius: 3 },
   coverageText: { fontSize: 12, fontWeight: '600', color: '#6B5E57', minWidth: 80 },
-  missingText: { fontSize: 13, color: '#8A8A8A', marginBottom: 10, lineHeight: 18 },
+  missingRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 10, gap: 8 },
+  missingText: { flex: 1, fontSize: 13, color: '#8A8A8A', lineHeight: 18 },
+  shopBtn: {
+    paddingHorizontal: 10, paddingVertical: 6, borderRadius: 6,
+    borderWidth: 1, borderColor: '#4CAF73', minWidth: 36, alignItems: 'center',
+  },
+  shopBtnDone: { borderColor: '#4CAF73', backgroundColor: 'rgba(76,175,115,0.1)' },
+  shopBtnText: { fontSize: 12, fontWeight: '600', color: '#4CAF73' },
+  shopBtnTextDone: { color: '#4CAF73' },
   footer: { flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', marginTop: 4 },
   cookBtn: {
     backgroundColor: '#4CAF73',

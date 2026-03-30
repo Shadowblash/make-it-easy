@@ -56,6 +56,13 @@
           "color": "#4CAF73",
           "defaultChannel": "expiry-alerts"
         }
+      ],
+      [
+        "expo-speech-recognition",
+        {
+          "microphonePermission": "Used for voice input to add inventory items",
+          "speechRecognitionPermission": "Used for voice input to add inventory items"
+        }
       ]
     ]
   }

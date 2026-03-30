@@ -11,6 +11,7 @@ import { Swipeable } from 'react-native-gesture-handler';
 import { getInventoryByZone, deleteItem } from '../services/InventoryService';
 import AddItemModal from '../components/AddItemModal';
 import ScanScreen from './ScanScreen';
+import VoiceInput from '../components/VoiceInput';
 import type { InventoryItem, Zone } from '../types';
 
 const ZONES: Zone[] = ['pantry', 'fridge', 'freezer', 'leftovers'];
@@ -135,7 +136,10 @@ export default function InventoryScreen() {
         />
       )}
 
-      {/* FAB */}
+      {/* Voice FAB */}
+      <VoiceInput defaultZone={activeZone} onAdded={loadItems} />
+
+      {/* Add FAB */}
       <TouchableOpacity
         style={styles.fab}
         onPress={() => setAddModalVisible(true)}
