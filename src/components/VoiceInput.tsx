@@ -1,6 +1,7 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   View, Text, StyleSheet, TouchableOpacity, Modal, ActivityIndicator, Alert,
+  Animated, Easing,
 } from 'react-native';
 import { useSpeechRecognitionEvent } from 'expo-speech-recognition';
 import { useTranslation } from 'react-i18next';
@@ -24,6 +25,21 @@ export default function VoiceInput({ defaultZone, onAdded }: Props) {
   const [phase, setPhase] = useState<Phase>('idle');
   const [parsed, setParsed] = useState<ParsedVoiceItem | null>(null);
   const [transcript, setTranscript] = useState('');
+  const pulseAnim = useRef(new Animated.Value(1)).current;
+
+  useEffect(() => {
+    if (phase === 'listening') {
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(pulseAnim, { toValue: 1.25, duration: 700, easing: Easing.out(Easing.ease), useNativeDriver: true }),
+          Animated.timing(pulseAnim, { toValue: 1, duration: 700, easing: Easing.in(Easing.ease), useNativeDriver: true }),
+        ])
+      ).start();
+    } else {
+      pulseAnim.stopAnimation();
+      pulseAnim.setValue(1);
+    }
+  }, [phase, pulseAnim]);
 
   // --- Speech recognition events ---
 
@@ -129,9 +145,9 @@ export default function VoiceInput({ defaultZone, onAdded }: Props) {
 
           {phase === 'listening' && (
             <View style={styles.listenContent}>
-              <View style={styles.pulseRing}>
+              <Animated.View style={[styles.pulseRing, { transform: [{ scale: pulseAnim }] }]}>
                 <View style={styles.pulseCore} />
-              </View>
+              </Animated.View>
               <Text style={styles.listenText}>{t('voice.listening')}</Text>
               <TouchableOpacity style={styles.cancelBtn} onPress={handleCancel} accessibilityRole="button">
                 <Text style={styles.cancelBtnText}>{t('common.cancel')}</Text>
