@@ -114,8 +114,9 @@ export default function InventoryScreen() {
         </View>
       ) : items.length === 0 ? (
         <View style={styles.emptyState}>
+          <Text style={styles.emptyIcon}>📦</Text>
           <Text style={styles.emptyText}>{t('inventory.empty')}</Text>
-          <TouchableOpacity style={styles.addButton} accessibilityRole="button">
+          <TouchableOpacity style={styles.addButton} onPress={() => setScanVisible(true)} accessibilityRole="button">
             <Text style={styles.addButtonText}>{t('inventory.scan')}</Text>
           </TouchableOpacity>
         </View>
@@ -253,6 +254,7 @@ const styles = StyleSheet.create({
   },
   retryText: { color: '#fff', fontWeight: '600' },
   emptyState: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 32 },
+  emptyIcon: { fontSize: 48, marginBottom: 16 },
   emptyText: { fontSize: 16, color: '#6B5E57', textAlign: 'center', marginBottom: 24, lineHeight: 24 },
   addButton: {
     backgroundColor: '#4CAF73', paddingHorizontal: 24, paddingVertical: 14,
