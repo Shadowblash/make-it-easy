@@ -1,14 +1,16 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import {
   View, Text, StyleSheet, FlatList, TouchableOpacity,
-  Alert, ActivityIndicator, RefreshControl,
+  Alert, ActivityIndicator, RefreshControl, Modal,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { useFocusEffect } from '@react-navigation/native';
-import { GestureHandlerRootView, Swipeable } from 'react-native-gesture-handler';
+import { Swipeable } from 'react-native-gesture-handler';
 
 import { getInventoryByZone, deleteItem } from '../services/InventoryService';
+import AddItemModal from '../components/AddItemModal';
+import ScanScreen from './ScanScreen';
 import type { InventoryItem, Zone } from '../types';
 
 const ZONES: Zone[] = ['pantry', 'fridge', 'freezer', 'leftovers'];
@@ -20,6 +22,8 @@ export default function InventoryScreen() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [addModalVisible, setAddModalVisible] = useState(false);
+  const [scanVisible, setScanVisible] = useState(false);
 
   const loadItems = useCallback(async () => {
     setError(null);
@@ -134,11 +138,29 @@ export default function InventoryScreen() {
       {/* FAB */}
       <TouchableOpacity
         style={styles.fab}
+        onPress={() => setAddModalVisible(true)}
         accessibilityRole="button"
         accessibilityLabel={t('inventory.addItem')}
       >
         <Text style={styles.fabText}>+</Text>
       </TouchableOpacity>
+
+      {/* Add Item modal */}
+      <AddItemModal
+        visible={addModalVisible}
+        defaultZone={activeZone}
+        onClose={() => setAddModalVisible(false)}
+        onAdded={() => { setAddModalVisible(false); loadItems(); }}
+      />
+
+      {/* Scan modal (full-screen) */}
+      <Modal visible={scanVisible} animationType="slide" onRequestClose={() => setScanVisible(false)}>
+        <ScanScreen
+          defaultZone={activeZone}
+          onClose={() => setScanVisible(false)}
+          onAdded={() => { setScanVisible(false); loadItems(); }}
+        />
+      </Modal>
     </SafeAreaView>
   );
 }
