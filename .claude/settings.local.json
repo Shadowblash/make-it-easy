@@ -10,7 +10,8 @@
       "Bash(npm install:*)",
       "Bash(npm list:*)",
       "Bash(ls babel.config.*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
     ]
   }
 }
