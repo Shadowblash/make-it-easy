@@ -88,6 +88,7 @@ export default function ShoppingScreen() {
 
       {items.length === 0 ? (
         <View style={styles.center}>
+          <Text style={styles.emptyIcon}>🛒</Text>
           <Text style={styles.emptyText}>{t('shopping.empty')}</Text>
         </View>
       ) : (
@@ -157,6 +158,7 @@ const styles = StyleSheet.create({
   title: { fontSize: 22, fontWeight: '700', color: '#3D2B1F' },
   clearText: { fontSize: 14, fontWeight: '600', color: '#4CAF73' },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 32 },
+  emptyIcon: { fontSize: 48, marginBottom: 16 },
   emptyText: { fontSize: 16, color: '#6B5E57', textAlign: 'center', lineHeight: 24 },
   listContent: { paddingHorizontal: 16, paddingVertical: 8 },
   row: {

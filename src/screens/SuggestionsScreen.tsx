@@ -103,6 +103,7 @@ export default function SuggestionsScreen() {
 
     return (
       <View style={styles.center}>
+        <Text style={styles.emptyIcon}>🥦</Text>
         <Text style={styles.emptyText}>{t('suggestions.emptyInventory')}</Text>
       </View>
     );
@@ -128,6 +129,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#4CAF73', paddingHorizontal: 20, paddingVertical: 10, borderRadius: 8,
   },
   retryText: { color: '#fff', fontWeight: '600' },
+  emptyIcon: { fontSize: 48, marginBottom: 16 },
   emptyText: { fontSize: 16, color: '#6B5E57', textAlign: 'center', lineHeight: 24 },
   listContent: { paddingTop: 12, paddingBottom: 24 },
   lenientBanner: {

@@ -45,6 +45,7 @@ export default function StatsScreen() {
 
         {isEmpty ? (
           <View style={styles.emptyState}>
+            <Text style={styles.emptyIcon}>📊</Text>
             <Text style={styles.emptyText}>{t('stats.empty')}</Text>
           </View>
         ) : (
@@ -99,6 +100,7 @@ const styles = StyleSheet.create({
   period: { fontSize: 14, color: '#6B5E57', marginBottom: 20 },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   emptyState: { alignItems: 'center', justifyContent: 'center', paddingTop: 80 },
+  emptyIcon: { fontSize: 48, marginBottom: 16 },
   emptyText: { fontSize: 16, color: '#6B5E57', textAlign: 'center' },
   statGrid: { flexDirection: 'row', gap: 12, marginBottom: 24 },
   statCard: {
