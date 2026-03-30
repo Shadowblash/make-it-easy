@@ -209,7 +209,7 @@ const styles = StyleSheet.create({
   label: { fontSize: 13, fontWeight: '600', color: '#6B5E57', marginBottom: 6, marginTop: 14 },
   optional: { fontWeight: '400', color: '#8A8A8A' },
   input: {
-    backgroundColor: '#FAFAF7', borderRadius: 10, paddingHorizontal: 14, paddingVertical: 12,
+    backgroundColor: '#FAFAF7', borderRadius: 12, paddingHorizontal: 14, paddingVertical: 12,
     fontSize: 16, color: '#3D2B1F', borderWidth: 1, borderColor: 'rgba(61,43,31,0.1)',
     minHeight: 48,
   },

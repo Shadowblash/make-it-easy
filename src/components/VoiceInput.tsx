@@ -259,12 +259,12 @@ const styles = StyleSheet.create({
   parsedValue: { fontSize: 15, fontWeight: '700', color: '#3D2B1F' },
   confirmActions: { flexDirection: 'row', gap: 12, marginTop: 8 },
   retryBtn: {
-    flex: 1, height: 48, borderRadius: 10, borderWidth: 1.5, borderColor: '#4CAF73',
+    flex: 1, height: 48, borderRadius: 12, borderWidth: 1.5, borderColor: '#4CAF73',
     alignItems: 'center', justifyContent: 'center',
   },
   retryBtnText: { fontSize: 15, fontWeight: '600', color: '#4CAF73' },
   confirmBtn: {
-    flex: 2, height: 48, borderRadius: 10, backgroundColor: '#4CAF73',
+    flex: 2, height: 48, borderRadius: 12, backgroundColor: '#4CAF73',
     alignItems: 'center', justifyContent: 'center',
   },
   confirmBtnDisabled: { backgroundColor: 'rgba(76,175,115,0.5)' },

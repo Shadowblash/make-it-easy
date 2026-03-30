@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
   listContent: { paddingHorizontal: 16, paddingVertical: 8 },
   row: {
     flexDirection: 'row', alignItems: 'center',
-    backgroundColor: '#FAFAF7', borderRadius: 10,
+    backgroundColor: '#FAFAF7', borderRadius: 12,
     paddingHorizontal: 12, paddingVertical: 12,
     marginBottom: 8, minHeight: 52,
     shadowColor: 'rgba(61,43,31,0.06)', shadowOffset: { width: 0, height: 1 },

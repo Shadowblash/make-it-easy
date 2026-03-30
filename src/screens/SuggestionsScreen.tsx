@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
   listContent: { paddingTop: 12, paddingBottom: 24 },
   lenientBanner: {
     marginHorizontal: 16, marginBottom: 12, backgroundColor: 'rgba(245,166,35,0.15)',
-    borderRadius: 10, padding: 12,
+    borderRadius: 12, padding: 12,
   },
   lenientBannerText: { fontSize: 14, color: '#6B5E57', fontWeight: '600', textAlign: 'center' },
 });

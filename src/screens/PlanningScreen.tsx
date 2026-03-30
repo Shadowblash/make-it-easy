@@ -228,7 +228,7 @@ const styles = StyleSheet.create({
   },
   pickerRow: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    backgroundColor: '#FAFAF7', borderRadius: 10, padding: 14, marginBottom: 8,
+    backgroundColor: '#FAFAF7', borderRadius: 12, padding: 14, marginBottom: 8,
     minHeight: 52,
   },
   pickerMealName: { fontSize: 15, fontWeight: '600', color: '#3D2B1F', flex: 1 },

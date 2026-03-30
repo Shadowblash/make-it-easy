@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
   sectionTitle: { fontSize: 17, fontWeight: '700', color: '#3D2B1F', marginBottom: 12 },
   topMealRow: {
     flexDirection: 'row', alignItems: 'center', backgroundColor: '#FAFAF7',
-    borderRadius: 10, paddingHorizontal: 14, paddingVertical: 12, marginBottom: 8, minHeight: 48,
+    borderRadius: 12, paddingHorizontal: 14, paddingVertical: 12, marginBottom: 8, minHeight: 48,
   },
   topMealRank: { fontSize: 14, fontWeight: '700', color: '#8A8A8A', width: 32 },
   topMealName: { flex: 1, fontSize: 15, fontWeight: '600', color: '#3D2B1F' },

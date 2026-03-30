@@ -264,7 +264,7 @@ const styles = StyleSheet.create({
   listContent: { paddingHorizontal: 16, paddingVertical: 8 },
   row: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    backgroundColor: '#FAFAF7', borderRadius: 10, paddingHorizontal: 14,
+    backgroundColor: '#FAFAF7', borderRadius: 12, paddingHorizontal: 14,
     paddingVertical: 12, marginBottom: 8, minHeight: 52,
     shadowColor: 'rgba(61,43,31,0.06)', shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 1, shadowRadius: 3, elevation: 1,
@@ -280,7 +280,7 @@ const styles = StyleSheet.create({
   expiryBadgeText: { fontSize: 11, fontWeight: '600', color: '#fff' },
   deleteAction: {
     backgroundColor: '#E55E4D', justifyContent: 'center', alignItems: 'center',
-    width: 80, borderRadius: 10, marginBottom: 8,
+    width: 80, borderRadius: 12, marginBottom: 8,
   },
   deleteActionText: { color: '#fff', fontWeight: '700', fontSize: 14 },
   fab: {

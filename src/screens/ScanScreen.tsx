@@ -171,7 +171,7 @@ const styles = StyleSheet.create({
   instructionText: { color: '#fff', fontSize: 15, textAlign: 'center' },
   manualBtn: {
     backgroundColor: 'rgba(255,255,255,0.15)', paddingHorizontal: 20, paddingVertical: 12,
-    borderRadius: 10, borderWidth: 1, borderColor: 'rgba(255,255,255,0.3)',
+    borderRadius: 12, borderWidth: 1, borderColor: 'rgba(255,255,255,0.3)',
   },
   manualBtnText: { color: '#fff', fontWeight: '600', fontSize: 14 },
 });
