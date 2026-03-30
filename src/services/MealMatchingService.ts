@@ -1,4 +1,5 @@
 import { supabase } from './supabase';
+import { cacheGet, cacheSet } from './CacheService';
 import type { SuggestionResult } from '../types';
 import type { QtyUnit, MealSource } from '../types/supabase';
 
@@ -54,32 +55,49 @@ function buildVector(ingredients: string[], vocab: string[]): number[] {
 // ─── Shared data fetcher ──────────────────────────────────────────────────────
 
 async function fetchMealsWithIngredients(): Promise<MealWithIngredients[]> {
+  const key = 'meals:with_ingredients';
   const sixMonthsAgo = new Date();
   sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
 
-  const { data, error } = await supabase
-    .from('meals')
-    .select(`
-      id, name, cooked_at, source, notes, updated_at, user_id,
-      meal_ingredients ( id, meal_id, ingredient_name, ingredient_name_normalized, qty, qty_unit )
-    `)
-    .gte('cooked_at', sixMonthsAgo.toISOString())
-    .order('cooked_at', { ascending: false });
+  try {
+    const { data, error } = await supabase
+      .from('meals')
+      .select(`
+        id, name, cooked_at, source, notes, updated_at, user_id,
+        meal_ingredients ( id, meal_id, ingredient_name, ingredient_name_normalized, qty, qty_unit )
+      `)
+      .gte('cooked_at', sixMonthsAgo.toISOString())
+      .order('cooked_at', { ascending: false });
 
-  if (error) throw error;
-  return (data as unknown as MealWithIngredients[]) ?? [];
+    if (error) throw error;
+    const meals = (data as unknown as MealWithIngredients[]) ?? [];
+    await cacheSet(key, meals);
+    return meals;
+  } catch {
+    return (await cacheGet<MealWithIngredients[]>(key)) ?? [];
+  }
+}
+
+async function fetchInventoryNames(): Promise<string[]> {
+  const key = 'inventory:normalized_names';
+  try {
+    const { data, error } = await supabase
+      .from('inventory_items')
+      .select('ingredient_name_normalized');
+
+    if (error) throw error;
+    const names = (data ?? []).map((i) => i.ingredient_name_normalized);
+    await cacheSet(key, names);
+    return names;
+  } catch {
+    return (await cacheGet<string[]>(key)) ?? [];
+  }
 }
 
 // ─── Main matching function ───────────────────────────────────────────────────
 
 export async function getSuggestions(topN = 5): Promise<SuggestionResult[]> {
-  const { data: inventoryData, error: invError } = await supabase
-    .from('inventory_items')
-    .select('ingredient_name_normalized');
-
-  if (invError) throw invError;
-
-  const inventoryNames = (inventoryData ?? []).map((i) => i.ingredient_name_normalized);
+  const inventoryNames = await fetchInventoryNames();
   if (inventoryNames.length === 0) return [];
 
   const meals = await fetchMealsWithIngredients();
@@ -133,11 +151,7 @@ export async function getSuggestions(topN = 5): Promise<SuggestionResult[]> {
  * Used for "À X ingrédients près" fallback.
  */
 export async function getSuggestionsLenient(topN = 3): Promise<SuggestionResult[]> {
-  const { data: inventoryData } = await supabase
-    .from('inventory_items')
-    .select('ingredient_name_normalized');
-
-  const inventoryNames = (inventoryData ?? []).map((i) => i.ingredient_name_normalized);
+  const inventoryNames = await fetchInventoryNames();
   const meals = await fetchMealsWithIngredients();
   if (meals.length === 0) return [];
 

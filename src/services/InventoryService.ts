@@ -1,5 +1,6 @@
 import { supabase } from './supabase';
 import { normalize } from '../utils/normalize';
+import { cacheGet, cacheSet } from './CacheService';
 import type { InventoryItem, Zone, QtyUnit } from '../types';
 
 export type CreateItemInput = {
@@ -18,24 +19,42 @@ export type UpdateItemInput = Partial<Omit<CreateItemInput, 'name'>> & {
 // ─── READ ─────────────────────────────────────────────────────────────────────
 
 export async function getInventoryByZone(zone: Zone): Promise<InventoryItem[]> {
-  const { data, error } = await supabase
-    .from('inventory_items')
-    .select('*')
-    .eq('zone', zone)
-    .order('created_at', { ascending: false });
+  const key = `inventory:zone:${zone}`;
+  try {
+    const { data, error } = await supabase
+      .from('inventory_items')
+      .select('*')
+      .eq('zone', zone)
+      .order('created_at', { ascending: false });
 
-  if (error) throw error;
-  return data ?? [];
+    if (error) throw error;
+    const items = data ?? [];
+    await cacheSet(key, items);
+    return items;
+  } catch (err) {
+    const cached = await cacheGet<InventoryItem[]>(key);
+    if (cached) return cached;
+    throw err;
+  }
 }
 
 export async function getAllInventory(): Promise<InventoryItem[]> {
-  const { data, error } = await supabase
-    .from('inventory_items')
-    .select('*')
-    .order('created_at', { ascending: false });
+  const key = 'inventory:all';
+  try {
+    const { data, error } = await supabase
+      .from('inventory_items')
+      .select('*')
+      .order('created_at', { ascending: false });
 
-  if (error) throw error;
-  return data ?? [];
+    if (error) throw error;
+    const items = data ?? [];
+    await cacheSet(key, items);
+    return items;
+  } catch (err) {
+    const cached = await cacheGet<InventoryItem[]>(key);
+    if (cached) return cached;
+    throw err;
+  }
 }
 
 /**

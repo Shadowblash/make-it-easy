@@ -1,15 +1,25 @@
 import { supabase } from './supabase';
+import { cacheGet, cacheSet } from './CacheService';
 import type { ShoppingListItem, QtyUnit } from '../types';
 
 export async function getShoppingList(): Promise<ShoppingListItem[]> {
-  const { data, error } = await supabase
-    .from('shopping_list')
-    .select('*')
-    .order('is_checked', { ascending: true })
-    .order('created_at', { ascending: true });
+  const key = 'shopping:list';
+  try {
+    const { data, error } = await supabase
+      .from('shopping_list')
+      .select('*')
+      .order('is_checked', { ascending: true })
+      .order('created_at', { ascending: true });
 
-  if (error) throw error;
-  return data ?? [];
+    if (error) throw error;
+    const items = data ?? [];
+    await cacheSet(key, items);
+    return items;
+  } catch (err) {
+    const cached = await cacheGet<ShoppingListItem[]>(key);
+    if (cached) return cached;
+    throw err;
+  }
 }
 
 export async function addToShoppingList(

@@ -49,12 +49,27 @@ export default function MealCard({ result, onCookTonight, onShoppingAdded }: Pro
         }
       }
 
-      // Log the meal as cooked
-      await supabase.from('meals').insert({
-        name: meal.name,
-        cooked_at: new Date().toISOString(),
-        source: 'user',
-      });
+      // Log the meal as cooked, then copy its ingredients to the new meal row
+      const { data: mealRow } = await supabase
+        .from('meals')
+        .insert({
+          name: meal.name,
+          cooked_at: new Date().toISOString(),
+          source: 'user',
+        })
+        .select('id')
+        .single();
+
+      if (mealRow) {
+        const ingredients = meal.ingredients.map((ing) => ({
+          meal_id: mealRow.id,
+          ingredient_name: ing.ingredient_name,
+          ingredient_name_normalized: ing.ingredient_name_normalized,
+          qty: ing.qty ?? null,
+          qty_unit: ing.qty_unit ?? null,
+        }));
+        await supabase.from('meal_ingredients').insert(ingredients);
+      }
 
       onCookTonight();
       Alert.alert('', t('suggestions.cookSuccess'));
