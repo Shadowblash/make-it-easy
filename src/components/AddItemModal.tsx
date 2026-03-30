@@ -46,6 +46,7 @@ export default function AddItemModal({
 
   async function handleSave() {
     if (!name.trim()) { setError('Le nom est requis'); return; }
+    if (expiry && !parseExpiryDate(expiry)) { setError('Date invalide (JJ/MM/AAAA)'); return; }
     setSaving(true);
     setError(null);
     try {
@@ -167,16 +168,31 @@ export default function AddItemModal({
   );
 }
 
-/** Parse DD/MM/YYYY or YYYY-MM-DD to ISO date string */
+/** Parse DD/MM/YYYY or YYYY-MM-DD to ISO date string. Returns null for invalid dates. */
 function parseExpiryDate(input: string): string | null {
   const ddmm = input.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
   if (ddmm) {
-    const [, d, m, y] = ddmm;
-    return `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`;
+    const day = parseInt(ddmm[1], 10);
+    const month = parseInt(ddmm[2], 10);
+    const year = parseInt(ddmm[3], 10);
+    if (month < 1 || month > 12) return null;
+    if (day < 1 || day > daysInMonth(month, year)) return null;
+    return `${ddmm[3]}-${ddmm[2].padStart(2, '0')}-${ddmm[1].padStart(2, '0')}`;
   }
-  const iso = input.match(/^\d{4}-\d{2}-\d{2}$/);
-  if (iso) return input;
+  const iso = input.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (iso) {
+    const month = parseInt(iso[2], 10);
+    const day = parseInt(iso[3], 10);
+    const year = parseInt(iso[1], 10);
+    if (month < 1 || month > 12) return null;
+    if (day < 1 || day > daysInMonth(month, year)) return null;
+    return input;
+  }
   return null;
+}
+
+function daysInMonth(month: number, year: number): number {
+  return new Date(year, month, 0).getDate();
 }
 
 const styles = StyleSheet.create({

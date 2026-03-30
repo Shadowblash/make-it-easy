@@ -33,6 +33,8 @@ export async function saveSeedSelections(meals: SeedMeal[]): Promise<void> {
   sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
   const cookedAt = sixMonthsAgo.toISOString();
 
+  const failures: string[] = [];
+
   for (const seedMeal of meals) {
     // Insert meal
     const { data: mealRow, error: mealErr } = await supabase
@@ -47,7 +49,10 @@ export async function saveSeedSelections(meals: SeedMeal[]): Promise<void> {
       .select('id')
       .single();
 
-    if (mealErr || !mealRow) continue;
+    if (mealErr || !mealRow) {
+      failures.push(seedMeal.name);
+      continue;
+    }
 
     // Insert meal_ingredients
     const ingredients = seedMeal.ingredients.map((raw) => ({
@@ -62,6 +67,10 @@ export async function saveSeedSelections(meals: SeedMeal[]): Promise<void> {
   }
 
   await SecureStore.setItemAsync(SEED_SYNCED_KEY, 'true');
+
+  if (failures.length > 0) {
+    throw new Error(`${failures.length} seed meal(s) failed to save: ${failures.join(', ')}`);
+  }
 }
 
 export async function isSeedSynced(): Promise<boolean> {

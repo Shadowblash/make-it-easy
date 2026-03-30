@@ -2,7 +2,7 @@ import { supabase } from './supabase';
 import type { MealPlan } from '../types';
 
 interface MealPlanWithName extends MealPlan {
-  meal_name: string;
+  meal_name: string | null;
 }
 
 export async function getWeekPlans(startDate: string, endDate: string): Promise<MealPlanWithName[]> {
@@ -20,7 +20,7 @@ export async function getWeekPlans(startDate: string, endDate: string): Promise<
     user_id: row.user_id,
     meal_id: row.meal_id,
     planned_date: row.planned_date,
-    meal_name: row.meals?.name ?? '',
+    meal_name: row.meals?.name ?? null,
   }));
 }
 

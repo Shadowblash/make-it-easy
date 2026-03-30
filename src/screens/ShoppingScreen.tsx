@@ -34,17 +34,35 @@ export default function ShoppingScreen() {
       prev.map((i) => i.id === item.id ? { ...i, is_checked: !i.is_checked } : i)
         .sort((a, b) => Number(a.is_checked) - Number(b.is_checked))
     );
-    await toggleChecked(item.id, item.is_checked);
+    try {
+      await toggleChecked(item.id, item.is_checked);
+    } catch {
+      // Rollback on failure
+      setItems((prev) =>
+        prev.map((i) => i.id === item.id ? { ...i, is_checked: item.is_checked } : i)
+          .sort((a, b) => Number(a.is_checked) - Number(b.is_checked))
+      );
+    }
   }
 
   async function handleDelete(id: string) {
+    const snapshot = items;
     setItems((prev) => prev.filter((i) => i.id !== id));
-    await deleteShoppingItem(id);
+    try {
+      await deleteShoppingItem(id);
+    } catch {
+      setItems(snapshot);
+    }
   }
 
   async function handleClearChecked() {
+    const snapshot = items;
     setItems((prev) => prev.filter((i) => !i.is_checked));
-    await clearChecked();
+    try {
+      await clearChecked();
+    } catch {
+      setItems(snapshot);
+    }
   }
 
   const checkedCount = items.filter((i) => i.is_checked).length;

@@ -44,6 +44,7 @@ export default function PlanningScreen() {
   const { t } = useTranslation();
   const [days, setDays] = useState<DayPlan[]>(getWeekDays());
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
   const [pickerDate, setPickerDate] = useState<string | null>(null);
   const [suggestions, setSuggestions] = useState<SuggestionResult[]>([]);
   const [pickerLoading, setPickerLoading] = useState(false);
@@ -52,13 +53,16 @@ export default function PlanningScreen() {
     const base = getWeekDays();
     const start = base[0].date;
     const end = base[6].date;
+    setLoadError(false);
     try {
       const plans = await getWeekPlans(start, end);
       setDays(base.map((d) => {
         const plan = plans.find((p) => p.planned_date === d.date);
         return { ...d, planId: plan?.id ?? null, mealName: plan?.meal_name ?? null };
       }));
-    } catch { /* offline: keep empty */ }
+    } catch {
+      setLoadError(true);
+    }
     finally { setLoading(false); }
   }, []);
 
@@ -96,6 +100,13 @@ export default function PlanningScreen() {
 
       {loading ? (
         <View style={styles.center}><ActivityIndicator color="#4CAF73" size="large" /></View>
+      ) : loadError ? (
+        <View style={styles.center}>
+          <Text style={styles.emptyText}>{t('common.errorLoad')}</Text>
+          <TouchableOpacity onPress={load} style={{ marginTop: 12 }} accessibilityRole="button">
+            <Text style={{ color: '#4CAF73', fontWeight: '600', fontSize: 15 }}>{t('common.retry')}</Text>
+          </TouchableOpacity>
+        </View>
       ) : (
         <ScrollView contentContainerStyle={styles.listContent}>
           {days.map((day) => (

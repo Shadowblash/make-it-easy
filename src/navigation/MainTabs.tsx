@@ -1,4 +1,5 @@
 import React from 'react';
+import { Text } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useTranslation } from 'react-i18next';
 
@@ -86,10 +87,5 @@ export default function MainTabs() {
 
 // Simple text-based tab icon — replace with proper SVG icons later
 function TabIcon({ emoji, color }: { emoji: string; color: string }) {
-  return (
-    <React.Fragment>
-      {/* Using Text here because SVG icon set is TBD */}
-      {/* color prop is available for when we switch to icon components */}
-    </React.Fragment>
-  );
+  return <Text style={{ fontSize: 18, color }}>{emoji}</Text>;
 }

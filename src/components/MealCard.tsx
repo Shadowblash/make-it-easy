@@ -41,12 +41,10 @@ export default function MealCard({ result, onCookTonight, onShoppingAdded }: Pro
     try {
       // Decrement each ingredient from inventory
       for (const ing of meal.ingredients) {
-        if (ing.qty && ing.qty_unit) {
+        if (ing.qty && ing.qty > 0 && ing.qty_unit) {
           await decrementItem(ing.ingredient_name_normalized, ing.qty, ing.qty_unit);
-        } else {
-          // No qty — just mark as used (delete the item)
-          await decrementItem(ing.ingredient_name_normalized, 0, 'piece');
         }
+        // Ingredients with no qty are skipped — no reliable amount to decrement
       }
 
       // Log the meal as cooked, then copy its ingredients to the new meal row

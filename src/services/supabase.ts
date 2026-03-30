@@ -19,7 +19,14 @@ const ExpoSecureStoreAdapter = {
     const chunks: string[] = [];
     for (let i = 0; i < count; i++) {
       const chunk = await SecureStore.getItemAsync(chunkKey(key, i));
-      if (!chunk) return null;
+      if (!chunk) {
+        // Partial data — clear all chunks to avoid repeated failed reads
+        for (let j = 0; j < count; j++) {
+          await SecureStore.deleteItemAsync(chunkKey(key, j)).catch(() => {});
+        }
+        await SecureStore.deleteItemAsync(`${key}_chunks`).catch(() => {});
+        return null;
+      }
       chunks.push(chunk);
     }
     return chunks.join('');
