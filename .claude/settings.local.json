@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm --version)",
+      "Bash(bun --version)",
+      "Bash(npx --version)",
+      "Bash(npx:*)",
+      "Bash(cp app.json App.tsx index.ts package.json package-lock.json tsconfig.json /e/smarp-dev/make-it-easy/)",
+      "Bash(cp -r assets /e/smarp-dev/make-it-easy/)",
+      "Bash(npm install:*)",
+      "Bash(npm list:*)",
+      "Bash(ls babel.config.*)",
+      "Bash(git add:*)"
+    ]
+  }
+}
